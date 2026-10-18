@@ -4,15 +4,317 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Toko Online Saya</title>
+  <title>Dapur Kita - Makanan Rumahan</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fffaf3;
+      color: #30251e;
+    }
+
+    header {
+      background: #963f24;
+      color: white;
+      padding: 22px 6%;
+    }
+
+    header h1 { margin: 0 0 8px; }
+    header p { margin: 0; }
+
+    .hero {
+      padding: 35px 6%;
+      background: #f6e3cb;
+    }
+
+    .hero h2 { font-size: 30px; margin: 0 0 10px; }
+
+    main {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      padding: 28px 6%;
+      align-items: start;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card, .cart {
+      background: white;
+      border-radius: 14px;
+      padding: 15px;
+      box-shadow: 0 3px 12px #0000000d;
+    }
+
+    .food-image {
+      width: 100%;
+      height: 145px;
+      object-fit: cover;
+      border-radius: 10px;
+      background: #f2e8dc;
+    }
+
+    .card h3 { margin: 12px 0 6px; }
+    .price { color: #963f24; font-weight: bold; }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .add, .checkout {
+      width: 100%;
+      background: #963f24;
+      color: white;
+      margin-top: 10px;
+    }
+
+    .cart { position: sticky; top: 12px; }
+    .cart-item { border-bottom: 1px solid #eee; padding: 12px 0; }
+    .qty button { padding: 5px 10px; background: #f3e7dc; }
+
+    input, textarea {
+      width: 100%;
+      padding: 11px;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: bold;
+      margin-top: 18px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #75665c;
+    }
+
+    @media (max-width: 700px) {
+      main { grid-template-columns: 1fr; padding: 20px 4%; }
+      .products { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .card { padding: 10px; }
+      .food-image { height: 115px; }
+      .cart { position: static; }
+      .hero h2 { font-size: 25px; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Selamat Datang di Toko Saya!</h1>
-  <p>Temukan produk favoritmu di sini.</p>
 
-  <h2>Kaos Keren</h2>
-  <p>Harga: Rp75.000</p>
+<header>
+  <h1>🍲 Dapur Kita</h1>
+  <p>Makanan rumahan, lezat dan dibuat dengan cinta.</p>
+</header>
 
-  <button>Beli Sekarang</button>
+<section class="hero">
+  <h2>Makan enak tanpa repot!</h2>
+  <p>Pilih menu favoritmu dan pesan langsung dari sini.</p>
+</section>
+
+<main>
+  <section>
+    <h2>Menu Kami</h2>
+    <div class="products" id="products"></div>
+  </section>
+
+  <aside class="cart">
+    <h2>🛒 Keranjang</h2>
+    <div id="cart-items">Keranjang masih kosong.</div>
+
+    <div class="total">
+      <span>Total</span>
+      <span id="total">Rp0</span>
+    </div>
+
+    <h3>Data Pemesan</h3>
+    <form id="order-form">
+      <input id="customer" placeholder="Nama lengkap" required>
+      <input id="phone" type="tel" placeholder="Nomor WhatsApp kamu" required>
+      <textarea id="address" placeholder="Alamat pengiriman" required></textarea>
+      <textarea id="notes" placeholder="Catatan pesanan (opsional)"></textarea>
+      <button class="checkout" type="submit">
+        Pesan melalui WhatsApp
+      </button>
+    </form>
+    <p style="font-size:12px;color:#75665c">
+      Pesanan akan dikirim ke WhatsApp penjual untuk konfirmasi.
+    </p>
+  </aside>
+</main>
+
+<footer>© 2026 Dapur Kita · Makanan rumahan</footer>
+
+<script>
+  // GANTI nomor ini dengan nomor WhatsApp penjual.
+  // Gunakan kode negara tanpa tanda +, misalnya 6281234567890.
+  const NOMOR_PENJUAL = "6281234567890";
+
+  const produk = [
+    {
+      id: 1,
+      nama: "Nasi Ayam",
+      harga: 20000,
+      gambar: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500",
+      deskripsi: "Menu makan siang yang lezat."
+    },
+    {
+      id: 2,
+      nama: "Ayam Goreng",
+      harga: 18000,
+      gambar: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500",
+      deskripsi: "Ayam gurih dan renyah."
+    },
+    {
+      id: 3,
+      nama: "Salad Segar",
+      harga: 15000,
+      gambar: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500",
+      deskripsi: "Sayuran segar setiap hari."
+    },
+    {
+      id: 4,
+      nama: "Nasi Spesial",
+      harga: 25000,
+      gambar: "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=500",
+      deskripsi: "Menu spesial untukmu."
+    }
+  ];
+
+  const keranjang = {};
+
+  const formatRupiah = angka =>
+    new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0
+    }).format(angka);
+
+  function tampilkanProduk() {
+    document.getElementById("products").innerHTML =
+      produk.map(p => `
+        <article class="card">
+          <img class="food-image"
+            src="${p.gambar}"
+            alt="${p.nama}"
+            onerror="this.style.display='none'">
+          <h3>${p.nama}</h3>
+          <p>${p.deskripsi}</p>
+          <div class="price">${formatRupiah(p.harga)}</div>
+          <button class="add" onclick="tambah(${p.id})">
+            + Tambah
+          </button>
+        </article>
+      `).join("");
+  }
+
+  function tambah(id) {
+    keranjang[id] = (keranjang[id] || 0) + 1;
+    tampilkanKeranjang();
+  }
+
+  function ubahJumlah(id, perubahan) {
+    keranjang[id] = (keranjang[id] || 0) + perubahan;
+    if (keranjang[id] <= 0) delete keranjang[id];
+    tampilkanKeranjang();
+  }
+
+  function tampilkanKeranjang() {
+    const item = produk.filter(p => keranjang[p.id] > 0);
+    const wadah = document.getElementById("cart-items");
+
+    if (item.length === 0) {
+      wadah.textContent = "Keranjang masih kosong.";
+    } else {
+      wadah.innerHTML = item.map(p => `
+        <div class="cart-item">
+          <strong>${p.nama}</strong>
+          <p>${formatRupiah(p.harga * keranjang[p.id])}</p>
+          <div class="qty">
+            <button type="button" onclick="ubahJumlah(${p.id}, -1)">−</button>
+            <span>${keranjang[p.id]}</span>
+            <button type="button" onclick="ubahJumlah(${p.id}, 1)">+</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    const total = item.reduce(
+      (sum, p) => sum + p.harga * keranjang[p.id], 0
+    );
+
+    document.getElementById("total").textContent = formatRupiah(total);
+  }
+
+  document.getElementById("order-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const item = produk.filter(p => keranjang[p.id] > 0);
+
+    if (item.length === 0) {
+      alert("Silakan pilih makanan terlebih dahulu.");
+      return;
+    }
+
+    if (!/^\d{10,15}$/.test(NOMOR_PENJUAL)) {
+      alert("Penjual perlu mengatur nomor WhatsApp di dalam kode.");
+      return;
+    }
+
+    const nama = document.getElementById("customer").value.trim();
+    const telepon = document.getElementById("phone").value.trim();
+    const alamat = document.getElementById("address").value.trim();
+    const catatan = document.getElementById("notes").value.trim();
+
+    const daftar = item.map(p =>
+      `- ${p.nama} x${keranjang[p.id]} = ${
+        formatRupiah(p.harga * keranjang[p.id])
+      }`
+    ).join("\n");
+
+    const total = item.reduce(
+      (sum, p) => sum + p.harga * keranjang[p.id], 0
+    );
+
+    const pesan = [
+      "Halo, saya ingin memesan makanan:",
+      "",
+      daftar,
+      "",
+      `Total sementara: ${formatRupiah(total)}`,
+      `Nama: ${nama}`,
+      `WhatsApp pelanggan: ${telepon}`,
+      `Alamat: ${alamat}`,
+      `Catatan: ${catatan || "-"}`,
+      "",
+      "Mohon konfirmasi pesanan dan biaya pengiriman."
+    ].join("\n");
+
+    window.open(
+      "https://wa.me/" + NOMOR_PENJUAL + "?text=" +
+      encodeURIComponent(pesan),
+      "_blank"
+    );
+  });
+
+  tampilkanProduk();
+  tampilkanKeranjang();
+</script>
+
 </body>
 </html>
